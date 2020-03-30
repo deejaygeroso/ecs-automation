@@ -24,6 +24,8 @@ def lambda_handler(event, context):
             task=currentRunningTaskARN,
         )
 
+        print 'Current running task is now closed for revision.'
+
     # Create a new task revision.
     response = client.register_task_definition(
         containerDefinitions=[
@@ -59,11 +61,13 @@ def lambda_handler(event, context):
     # Get the lastest task definition revision (e.g.: mail:15).
     taskDefinitionRev = response['taskDefinition']['family'] + ':' + str(response['taskDefinition']['revision'])
 
-    # run newly created tas.
+    # run newly revisioned task.
     response = client.run_task(
         cluster=clusterName,
         taskDefinition=taskDefinitionRev,
     )
+
+    print 'New task revision is now running.'
 
     # Note: There has to be a current running service for this to work.
     # Update current running service.
@@ -78,4 +82,4 @@ def lambda_handler(event, context):
         taskDefinition=taskDefinitionRev,
     )
 
-    print 'service updated'
+    print 'Service updated.'
